@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./themify-icons/themify-icons.css">
+    <title>To do list</title>
+</head>
+<body>
+    <div class="app">
+        <div class="container">
+            <input type="text" class="input" placeholder="Enter Your todo">
+            <button class="btn">Add</button>
+            <div class="list-item-container">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+
+
+        let inputElement = document.querySelector('.input');
+        let itemContainer = document.querySelector('.list-item-container');
+        let btnElement = document.querySelector('.btn')
+            btnElement.addEventListener('click', function(e){
+                if(inputElement.value.trim()){
+                    let inputValue = inputElement.value.trim()
+                    render({
+                        list: inputValue
+                    })
+                    inputElement.value = null
+                    saveToDoList()
+                }
+        })
+        
+
+
+        document.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){
+                let inputValue = inputElement.value.trim()
+                render({
+                    list: inputValue
+                })
+                inputElement.value = null
+                saveToDoList()
+            }
+        })
+
+
+        function render(input){
+            let itemElement = document.createElement('div')
+            itemElement.innerHTML = `<h3>${input.list}</h3>
+                                    <i class="ti-trash"></i>`
+            itemElement.setAttribute('class', 'list-item')
+            itemContainer.appendChild(itemElement)
+            if(input.compelet ==='compeleted'){
+                let h3Element = itemElement.querySelector('h3')
+                h3Element.setAttribute('class', input.compelet)
+            }
+            itemElement.addEventListener('click', function(){
+                let titleElement = itemElement.querySelector('h3')
+                titleElement.classList.toggle('compeleted')
+                saveToDoList()
+            })
+
+            let close = itemElement.querySelector('.ti-trash')
+            close.addEventListener('click', function(){
+                this.parentElement.remove()
+                saveToDoList()
+            })
+        }
+
+
+
+        function saveToDoList(){
+            let getToDoList = []
+            let toDoList = document.querySelectorAll('.list-item')
+            toDoList.forEach(function(list){
+                let text = list.querySelector('h3')
+                let status = text.getAttribute('class')
+                getToDoList.push({list:text.innerText,compelet:status})
+            })
+            localStorage.setItem('todolist', JSON.stringify(getToDoList))
+        }
+
+
+
+        function init(){
+            let data = JSON.parse(localStorage.getItem('todolist'))
+            data.forEach(function(e){
+                render(e)
+            })
+        }
+        init()
+    </script>
+</body>
+</html>
